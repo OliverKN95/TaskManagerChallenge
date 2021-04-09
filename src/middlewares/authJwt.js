@@ -1,6 +1,7 @@
 import jwt from 'jsonwebtoken'
 import config from '../config'
 import User from '../models/User';
+import Role from '../models/Role';
 
 export const verifyToken = async (req, res, next) => {
     try {
@@ -19,4 +20,20 @@ export const verifyToken = async (req, res, next) => {
     } catch (error) {
         return res.status(401).json({message: "Sin autorización."});
     }
+};
+
+export const isAgent = async (req, res, next) => {
+    const user = await User.findById(req.userId);
+    const roles = await Role.find({_id: {$in: user.roles}});
+
+    for (let i = 0; i < roles.length; i++) {
+        
+        if (roles[i].name === "moderator" || roles[i].name === "admin") {
+            next();
+            return; 
+        }
+    }
+
+    return res.status(403).json({message: "No cuentas con el nivel de acceso solicitado."});
 }
+

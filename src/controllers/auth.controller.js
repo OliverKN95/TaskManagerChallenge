@@ -6,12 +6,6 @@ import Role from '../models/Role';
 export const signUp = async (req, res) => {
     const { username, first_name, last_name, email, password, roles } = req.body;
 
-    const userFound = User.find({ email });
-
-    if (userFound) {
-        return res.status(400).json({ message: "El email ya existe" });
-    }
-
     const newUser = new User({
         username,
         first_name,
